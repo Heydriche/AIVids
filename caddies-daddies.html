@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caddies + Daddies - AIVids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #030613; --card: #080d20; --border: rgba(0,240,255,0.15); --text: #e2e8f0; --muted: #64748b; --cyan: #00f0ff; --glow: rgba(0,240,255,0.4); --font-base: 'Courier Prime', monospace; --font-title: 'Teko', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg); background-image: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px); background-size: 40px 40px; color: var(--text); font-family: var(--font-base); font-size: 14px; line-height: 1.6; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; transition: 0.25s ease; }
+    .container { width: 94%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+    nav { padding: 14px 0; border-bottom: 1px solid var(--border); background: rgba(3,6,19,0.9); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 100; }
+    .nav-box { display: flex; align-items: center; justify-content: space-between; }
+    .brand-name { font-family: var(--font-title); font-weight: 700; font-size: 1.9rem; color: var(--cyan); text-shadow: 0 0 8px var(--glow); line-height: 1; }
+    .back-btn { color: var(--cyan); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; }
+    .post-detail { max-width: 900px; margin: 0 auto 50px; }
+    .post-main-title { font-family: var(--font-title); font-weight: 700; font-size: 2.5rem; color: #fff; margin: 30px 0 15px; text-shadow: 0 0 10px rgba(0,240,255,0.2); line-height: 1.1; }
+    .tech-player-box { background: #000; border: 1px solid var(--cyan); box-shadow: 0 0 20px rgba(0,240,255,0.1); margin-bottom: 20px; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; }
+    .tech-screen-hud { padding: 12px 15px; border-bottom: 1px solid rgba(0,240,255,0.2); font-size: 0.85rem; font-weight: 700; color: var(--cyan); background: rgba(0,240,255,0.05); }
+    .tech-stream-container { width: 100%; aspect-ratio: 16/9; display: flex; justify-content: center; align-items: center; background: #02040a; position: relative; }
+    .tech-stream-container iframe { width: 100%; height: 100%; border: none; }
+    .cv-wrapper { position: relative; width: 100%; height: 100%; background: #02040a; display: flex; align-items: center; justify-content: center; user-select: none; }
+    .cv-wrapper video { width: 100%!important; height: 100%!important; object-fit: contain; background: #000; cursor: pointer; display: block; }
+    .cv-big-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 70px; height: 70px; background: rgba(3,6,19,0.85); border: 2px solid var(--cyan); backdrop-filter: blur(8px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 15; transition: 0.3s; box-shadow: 0 0 20px var(--glow); }
+    .cv-big-play svg { width: 26px; height: 26px; fill: var(--cyan); margin-left: 4px; }
+    .cv-big-play:hover { background: var(--cyan); transform: translate(-50%,-50%) scale(1.08); }
+    .cv-big-play:hover svg { fill: #000; }
+    .cv-wrapper.is-playing .cv-big-play { opacity: 0; pointer-events: none; }
+    .cv-controls { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(3,6,19,0.98) 0%, rgba(3,6,19,0.7) 70%, transparent 100%); padding: 14px 18px 10px; z-index: 20; display: flex; flex-direction: column; gap: 8px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .cv-wrapper.is-playing .cv-controls { opacity: 1; pointer-events: auto; }
+    .cv-wrapper.is-playing.is-inactive .cv-controls { opacity: 0; pointer-events: none; }
+    .cv-timeline { position: relative; width: 100%; height: 16px; display: flex; align-items: center; cursor: pointer; }
+    .cv-track { width: 100%; height: 4px; background: rgba(0,240,255,0.2); position: relative; border-radius: 2px; }
+    .cv-bar { height: 100%; width: 0%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); position: relative; border-radius: 2px; }
+    .cv-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid var(--cyan); border-radius: 50%; }
+    .cv-bar-row { display: flex; align-items: center; justify-content: space-between; }
+    .cv-bar-left, .cv-bar-right { display: flex; align-items: center; gap: 12px; }
+    .cv-btn { background: transparent; border: none; cursor: pointer; display: flex; align-items: center; outline: none; }
+    .cv-btn svg { width: 18px; height: 18px; fill: #94a3b8; transition: fill 0.2s; }
+    .cv-btn:hover svg { fill: var(--cyan); }
+    .cv-time { font-family: var(--font-base); font-size: 0.75rem; color: var(--cyan); font-weight: 700; }
+    .tech-btn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+    .btn-eps, .btn-dl { background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.3); color: var(--cyan); font-weight: 700; font-size: 0.85rem; padding: 10px 12px; cursor: pointer; text-align: center; border-radius: 6px; font-family: var(--font-base); display: flex; justify-content: center; align-items: center; gap: 6px; }
+    .btn-eps:hover { background: rgba(0,240,255,0.15); border-color: var(--cyan); color: #fff; }
+    .btn-eps.active { background: var(--cyan); color: #000; border-color: var(--cyan); box-shadow: 0 0 15px var(--glow); }
+    .btn-dl { background: rgba(217,70,239,0.08); border-color: rgba(217,70,239,0.35); color: #f0abfc; }
+    .btn-dl:hover { background: rgba(217,70,239,0.25); border-color: #d946ef; color: #fff; box-shadow: 0 0 12px rgba(217,70,239,0.4); }
+    .v-gate-trigger { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 90; cursor: pointer; background: transparent; }
+    footer { text-align: center; padding: 30px 0; border-top: 1px solid rgba(0,240,255,0.1); margin-top: 20px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="container nav-box">
+    <a class="brand-name" href="./">AIVIDS</a>
+    <a href="./" class="back-btn">&larr; BACK TO DIRECTORY</a>
+  </div>
+</nav>
+
+<div class="container">
+  <article class="post-detail">
+    <h1 class="post-main-title">Caddies + Daddies</h1>
+    <div class="tech-player-box">
+      <div class="tech-screen-hud">// NOW PLAYING: <span id="current-stream-title" style="margin-left:8px; color:#fff;">Caddies + Daddies: Episode 01</span></div>
+      <div class="tech-stream-container" id="streamContainer"></div>
+    </div>
+
+    <!-- LIST EPISODE -->
+    <div class="tech-btn-grid">
+      <button class="btn-eps active" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239857','Caddies + Daddies: Episode 01', this)">Episode 01</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239858','Caddies + Daddies: Episode 02', this)">Episode 02</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239859','Caddies + Daddies: Episode 03', this)">Episode 03</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239860','Caddies + Daddies: Episode 04', this)">Episode 04</button>
+    </div>
+
+    <!-- LIST DOWNLOAD -->
+    <div class="tech-btn-grid" style="margin-top:12px;">
+      <a href="https://1024terabox.com/s/1dPXdeY8WTMv-uiUux6I-Kw" target="_blank" class="btn-dl">Download 01</a>
+      <a href="https://1024terabox.com/s/1FIh-YU7eriMlmgIhB-D9Gg" target="_blank" class="btn-dl">Download 02</a>
+      <a href="https://1024terabox.com/s/1yBHap6L3jYAbg5HHCwsz7w" target="_blank" class="btn-dl">Download 03</a>
+      <a href="https://1024terabox.com/s/1Nhi3GtaA_S_KF_JR4z3L_w" target="_blank" class="btn-dl">Download 04</a>
+    </div>
+  </article>
+</div>
+
+<footer>&#169; AIVids. AI VIDEO COLLECTIONS</footer>
+
+<script>
+const _sGate = "aHR0cHM6Ly9hdWN0aW9uci5vcmcvNC9hY2QwOWRhZTJjNjBhOWZlMjZhMTA4NmMzNjg1NjU1Mg==";
+
+function formatTime(s) {
+  if (isNaN(s)) return "00:00";
+  let m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return (m < 10 ? "0" + m : m) + ":" + (sec < 10 ? "0" + sec : sec);
+}
+
+function mountCustomPlayer(c, u) {
+  c.innerHTML = `
+    <div class="cv-wrapper">
+      <video src="${u}" playsinline preload="metadata"></video>
+      <div class="cv-big-play" title="Play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="cv-controls">
+        <div class="cv-timeline"><div class="cv-track"><div class="cv-bar"></div></div></div>
+        <div class="cv-bar-row">
+          <div class="cv-bar-left"><span class="cv-time">00:00 / 00:00</span></div>
+          <div class="cv-bar-right">
+            <button class="cv-btn cv-mute-toggle"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
+            <button class="cv-btn cv-fs-toggle"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  const wrap = c.querySelector('.cv-wrapper'), v = wrap.querySelector('video'), bigPlay = wrap.querySelector('.cv-big-play'),
+        muteToggle = wrap.querySelector('.cv-mute-toggle'), fsToggle = wrap.querySelector('.cv-fs-toggle'),
+        tl = wrap.querySelector('.cv-timeline'), bar = wrap.querySelector('.cv-bar'), timeLbl = wrap.querySelector('.cv-time');
+  let drag = false, hideTimer;
+
+  function togglePlay() { v.paused ? v.play() : v.pause(); }
+  function updateSeek(e) {
+    const r = tl.getBoundingClientRect();
+    let pos = Math.max(0, Math.min(1, ((e.clientX || (e.touches && e.touches[0].clientX)) - r.left) / r.width));
+    if (!isNaN(v.duration)) {
+      v.currentTime = pos * v.duration;
+      bar.style.width = (pos * 100) + '%';
+      timeLbl.innerText = formatTime(v.currentTime) + ' / ' + formatTime(v.duration);
+    }
+  }
+
+  bigPlay.onclick = v.onclick = togglePlay;
+  v.onplay = () => wrap.classList.add('is-playing');
+  v.onpause = () => wrap.classList.remove('is-playing', 'is-inactive');
+  v.ontimeupdate = () => {
+    if (!drag && !isNaN(v.duration)) {
+      bar.style.width = ((v.currentTime / v.duration) * 100) + '%';
+      timeLbl.innerText = formatTime(v.currentTime) + ' / ' + formatTime(v.duration);
+    }
+  };
+  v.onloadedmetadata = () => timeLbl.innerText = "00:00 / " + formatTime(v.duration);
+  tl.onmousedown = (e) => { drag = true; updateSeek(e); };
+  window.onmousemove = (e) => { if (drag) updateSeek(e); };
+  window.onmouseup = () => { if (drag) drag = false; };
+  muteToggle.onclick = () => v.muted = !v.muted;
+  fsToggle.onclick = () => !document.fullscreenElement ? (wrap.requestFullscreen && wrap.requestFullscreen()) : document.exitFullscreen();
+  wrap.onmousemove = () => {
+    wrap.classList.remove('is-inactive');
+    clearTimeout(hideTimer);
+    if (wrap.classList.contains('is-playing')) hideTimer = setTimeout(() => wrap.classList.add('is-inactive'), 2500);
+  };
+}
+
+function pasangPlayerGate() {
+  const box = document.getElementById('streamContainer');
+  if (!box || box.querySelector('.v-gate-trigger')) return;
+  const g = document.createElement('div');
+  g.className = 'v-gate-trigger';
+  g.onclick = function(e) {
+    if (e.isTrusted) {
+      g.remove();
+      window.open(atob(_sGate), '_blank');
+      const v = box.querySelector('video');
+      if (v) v.play();
+    }
+  };
+  box.appendChild(g);
+}
+
+function switchMedia(type, url, title, btn) {
+  const container = document.getElementById('streamContainer'), titleSpan = document.getElementById('current-stream-title');
+  if (titleSpan) titleSpan.innerText = title;
+  document.querySelectorAll('.btn-eps').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (type === 'mp4') {
+    mountCustomPlayer(container, url);
+  } else if (type === 'vk') {
+    container.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+  }
+  
+  setTimeout(pasangPlayerGate, 100);
+}
+
+window.addEventListener('load', () => {
+  const activeBtn = document.querySelector('.btn-eps.active');
+  if (activeBtn) activeBtn.click();
+});
+
+document.addEventListener('click', function(e) {
+  const d = e.target.closest('.btn-dl');
+  if (d) {
+    e.preventDefault();
+    const downloadUrl = d.getAttribute('href');
+    window.open(atob(_sGate), '_blank');
+    setTimeout(() => { window.location.href = downloadUrl; }, 600);
+  }
+});
+</script>
+</body>
+</html>
