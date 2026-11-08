@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chalice - AIVids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #030613; --card: #080d20; --border: rgba(0,240,255,0.15); --text: #e2e8f0; --muted: #64748b; --cyan: #00f0ff; --glow: rgba(0,240,255,0.4); --font-base: 'Courier Prime', monospace; --font-title: 'Teko', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg); background-image: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px); background-size: 40px 40px; color: var(--text); font-family: var(--font-base); font-size: 14px; line-height: 1.6; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; transition: 0.25s ease; }
+    .container { width: 94%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+    nav { padding: 14px 0; border-bottom: 1px solid var(--border); background: rgba(3,6,19,0.9); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 100; }
+    .nav-box { display: flex; align-items: center; justify-content: space-between; }
+    .brand-name { font-family: var(--font-title); font-weight: 700; font-size: 1.9rem; color: var(--cyan); text-shadow: 0 0 8px var(--glow); line-height: 1; }
+    .back-btn { color: var(--cyan); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; }
+    .post-detail { max-width: 900px; margin: 0 auto 50px; }
+    .post-main-title { font-family: var(--font-title); font-weight: 700; font-size: 2.5rem; color: #fff; margin: 30px 0 15px; text-shadow: 0 0 10px rgba(0,240,255,0.2); line-height: 1.1; }
+    .tech-player-box { background: #000; border: 1px solid var(--cyan); box-shadow: 0 0 20px rgba(0,240,255,0.1); margin-bottom: 20px; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; }
+    .tech-screen-hud { padding: 12px 15px; border-bottom: 1px solid rgba(0,240,255,0.2); font-size: 0.85rem; font-weight: 700; color: var(--cyan); background: rgba(0,240,255,0.05); }
+    .tech-stream-container { width: 100%; aspect-ratio: 16/9; display: flex; justify-content: center; align-items: center; background: #02040a; position: relative; }
+    .tech-stream-container iframe { width: 100%; height: 100%; border: none; }
+    .cv-wrapper { position: relative; width: 100%; height: 100%; background: #02040a; display: flex; align-items: center; justify-content: center; user-select: none; }
+    .cv-wrapper video { width: 100%!important; height: 100%!important; object-fit: contain; background: #000; cursor: pointer; display: block; }
+    .cv-big-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 70px; height: 70px; background: rgba(3,6,19,0.85); border: 2px solid var(--cyan); backdrop-filter: blur(8px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 15; transition: 0.3s; box-shadow: 0 0 20px var(--glow); }
+    .cv-big-play svg { width: 26px; height: 26px; fill: var(--cyan); margin-left: 4px; }
+    .cv-big-play:hover { background: var(--cyan); transform: translate(-50%,-50%) scale(1.08); }
+    .cv-big-play:hover svg { fill: #000; }
+    .cv-wrapper.is-playing .cv-big-play { opacity: 0; pointer-events: none; }
+    .cv-controls { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(3,6,19,0.98) 0%, rgba(3,6,19,0.7) 70%, transparent 100%); padding: 14px 18px 10px; z-index: 20; display: flex; flex-direction: column; gap: 8px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .cv-wrapper.is-playing .cv-controls { opacity: 1; pointer-events: auto; }
+    .cv-wrapper.is-playing.is-inactive .cv-controls { opacity: 0; pointer-events: none; }
+    .cv-timeline { position: relative; width: 100%; height: 16px; display: flex; align-items: center; cursor: pointer; }
+    .cv-track { width: 100%; height: 4px; background: rgba(0,240,255,0.2); position: relative; border-radius: 2px; }
+    .cv-bar { height: 100%; width: 0%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); position: relative; border-radius: 2px; }
+    .cv-bar::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid var(--cyan); border-radius: 50%; }
+    .cv-bar-row { display: flex; align-items: center; justify-content: space-between; }
+    .cv-bar-left, .cv-bar-right { display: flex; align-items: center; gap: 12px; }
+    .cv-btn { background: transparent; border: none; cursor: pointer; display: flex; align-items: center; outline: none; }
+    .cv-btn svg { width: 18px; height: 18px; fill: #94a3b8; transition: fill 0.2s; }
+    .cv-btn:hover svg { fill: var(--cyan); }
+    .cv-time { font-family: var(--font-base); font-size: 0.75rem; color: var(--cyan); font-weight: 700; }
+    .tech-btn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+    .btn-eps, .btn-dl { background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.3); color: var(--cyan); font-weight: 700; font-size: 0.85rem; padding: 10px 12px; cursor: pointer; text-align: center; border-radius: 6px; font-family: var(--font-base); display: flex; justify-content: center; align-items: center; gap: 6px; }
+    .btn-eps:hover { background: rgba(0,240,255,0.15); border-color: var(--cyan); color: #fff; }
+    .btn-eps.active { background: var(--cyan); color: #000; border-color: var(--cyan); box-shadow: 0 0 15px var(--glow); }
+    .btn-dl { background: rgba(217,70,239,0.08); border-color: rgba(217,70,239,0.35); color: #f0abfc; }
+    .btn-dl:hover { background: rgba(217,70,239,0.25); border-color: #d946ef; color: #fff; box-shadow: 0 0 12px rgba(217,70,239,0.4); }
+    .v-gate-trigger { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 90; cursor: pointer; background: transparent; }
+    footer { text-align: center; padding: 30px 0; border-top: 1px solid rgba(0,240,255,0.1); margin-top: 20px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="container nav-box">
+    <a class="brand-name" href="./">AIVIDS</a>
+    <a href="./" class="back-btn">&larr; BACK TO DIRECTORY</a>
+  </div>
+</nav>
+
+<div class="container">
+  <article class="post-detail">
+    <h1 class="post-main-title">Chalice</h1>
+    <div class="tech-player-box">
+      <div class="tech-screen-hud">// NOW PLAYING: <span id="current-stream-title" style="margin-left:8px; color:#fff;">Chalice: Episode 01</span></div>
+      <div class="tech-stream-container" id="streamContainer"></div>
+    </div>
+
+    <!-- LIST EPISODE -->
+    <div class="tech-btn-grid">
+      <button class="btn-eps active" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239887','Chalice: Episode 01', this)">Episode 01</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239888','Chalice: Episode 02', this)">Episode 02</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239889','Chalice: Episode 03', this)">Episode 03</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239890','Chalice: Episode 04', this)">Episode 04</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239891','Chalice: Episode 05 I', this)">Episode 05 I</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239892','Chalice: Episode 05 II', this)">Episode 05 II</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239893','Chalice: Episode 06', this)">Episode 06</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239894','Chalice: Episode 07', this)">Episode 07</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239895','Chalice: Episode 08', this)">Episode 08</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239896','Chalice: Episode 09', this)">Episode 09</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239897','Chalice: Episode 10', this)">Episode 10</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239898','Chalice: Episode 11', this)">Episode 11</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239899','Chalice: Episode 14', this)">Episode 14</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239900','Chalice: Episode 15', this)">Episode 15</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239901','Chalice: Episode 16', this)">Episode 16</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239902','Chalice: Episode 17', this)">Episode 17</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239903','Chalice: Episode 18', this)">Episode 18</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239904','Chalice: Episode 19', this)">Episode 19</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239905','Chalice: Episode 20', this)">Episode 20</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239906','Chalice: Episode 21', this)">Episode 21</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239907','Chalice: Episode 22', this)">Episode 22</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239908','Chalice: Episode 23', this)">Episode 23</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239909','Chalice: Episode 24', this)">Episode 24</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239910','Chalice: Episode 25', this)">Episode 25</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239951','Chalice: Episode 26', this)">Episode 26</button>
+      <button class="btn-eps" onclick="switchMedia('vk','https://vk.com/video_ext.php?oid=802177017&id=456239952','Chalice: Episode 27', this)">Episode 27</button>
+    </div>
+
+    <!-- LIST DOWNLOAD -->
+    <div class="tech-btn-grid" style="margin-top:12px;">
+      <a href="https://1024terabox.com/s/1MfAq7OUwqKL7Odw9octTfw" target="_blank" class="btn-dl">Download 01</a>
+      <a href="https://1024terabox.com/s/1qNTS0JdAhyXW2dOV7nWd5g" target="_blank" class="btn-dl">Download 02</a>
+      <a href="https://1024terabox.com/s/1DxZV5TGHD8oDGDi-OiRccw" target="_blank" class="btn-dl">Download 03</a>
+      <a href="https://1024terabox.com/s/1LELzM4wOgHYOke3SxNKwTQ" target="_blank" class="btn-dl">Download 04</a>
+      <a href="https://1024terabox.com/s/1w0agUMCqvTXHegDY77841Q" target="_blank" class="btn-dl">Download 05 I</a>
+      <a href="https://1024terabox.com/s/1jRXg8j2rO1fj8s11IRwXEw" target="_blank" class="btn-dl">Download 05 II</a>
+      <a href="https://1024terabox.com/s/14WZTh8-VONBDXa1wKzmrkA" target="_blank" class="btn-dl">Download 06</a>
+      <a href="https://1024terabox.com/s/1ISHoCr1jX-RPi5LSp5A9ow" target="_blank" class="btn-dl">Download 07</a>
+      <a href="https://1024terabox.com/s/1CMxHWX_wGH1ntfAJ7T9wCw" target="_blank" class="btn-dl">Download 08</a>
+      <a href="https://1024terabox.com/s/1QZacO_fVzaLM8lpaltqs9Q" target="_blank" class="btn-dl">Download 09</a>
+      <a href="https://1024terabox.com/s/1ggAdFo5YBo0k8y7qkIRYJg" target="_blank" class="btn-dl">Download 10</a>
+      <a href="https://1024terabox.com/s/1H0akizJNfJCnbUK01RMAlQ" target="_blank" class="btn-dl">Download 11</a>
+      <a href="https://1024terabox.com/s/1SCLuwkF4BY9AZDuGyLZonw" target="_blank" class="btn-dl">Download 14</a>
+      <a href="https://1024terabox.com/s/1ryLTiUad0XHdfAoT1RueLg" target="_blank" class="btn-dl">Download 15</a>
+      <a href="https://1024terabox.com/s/1M5HItZ1Q5Tl61IAmeH-hOA" target="_blank" class="btn-dl">Download 16</a>
+      <a href="https://1024terabox.com/s/1V_x4NatQl5Oi4nfL-w2fzA" target="_blank" class="btn-dl">Download 17</a>
+      <a href="https://1024terabox.com/s/1j6_5kp4U9XE2PrZ0bubH_A" target="_blank" class="btn-dl">Download 18</a>
+      <a href="https://1024terabox.com/s/1oNk6Xix4yCNh2A-c8p1XhA" target="_blank" class="btn-dl">Download 19</a>
+      <a href="https://1024terabox.com/s/1B-LKjqjMmOQbBs3G7RAYvw" target="_blank" class="btn-dl">Download 20</a>
+      <a href="https://1024terabox.com/s/10za2amJlnmIh5Kz3RBPlzA" target="_blank" class="btn-dl">Download 21</a>
+      <a href="https://1024terabox.com/s/1FvbcaA3SljYN1NaAk3Z6Aw" target="_blank" class="btn-dl">Download 22</a>
+      <a href="https://1024terabox.com/s/1ckktWHrLXGkPtHGAZf0_kw" target="_blank" class="btn-dl">Download 23</a>
+      <a href="https://1024terabox.com/s/1gMtwu_YKAjNPEtSm2UsIlQ" target="_blank" class="btn-dl">Download 24</a>
+      <a href="https://1024terabox.com/s/1zrqL-8IW--FkgBeShvtgMA" target="_blank" class="btn-dl">Download 25</a>
+      <a href="https://videyyy.com/s/1j3aUTCQZqjx3xFUPL2VnrA" target="_blank" class="btn-dl">Download 26</a>
+      <a href="https://videyyy.com/s/1_RkgyB1ohmVlW-3HXSy4Lw" target="_blank" class="btn-dl">Download 27</a>
+    </div>
+  </article>
+</div>
+
+<footer>&#169; AIVids. AI VIDEO COLLECTIONS</footer>
+
+<script>
+const _sGate = "aHR0cHM6Ly9hdWN0aW9uci5vcmcvNC9hY2QwOWRhZTJjNjBhOWZlMjZhMTA4NmMzNjg1NjU1Mg==";
+
+function formatTime(s) {
+  if (isNaN(s)) return "00:00";
+  let m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return (m < 10 ? "0" + m : m) + ":" + (sec < 10 ? "0" + sec : sec);
+}
+
+function mountCustomPlayer(c, u) {
+  c.innerHTML = `
+    <div class="cv-wrapper">
+      <video src="${u}" playsinline preload="metadata"></video>
+      <div class="cv-big-play" title="Play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="cv-controls">
+        <div class="cv-timeline"><div class="cv-track"><div class="cv-bar"></div></div></div>
+        <div class="cv-bar-row">
+          <div class="cv-bar-left"><span class="cv-time">00:00 / 00:00</span></div>
+          <div class="cv-bar-right">
+            <button class="cv-btn cv-mute-toggle"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
+            <button class="cv-btn cv-fs-toggle"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  const wrap = c.querySelector('.cv-wrapper'), v = wrap.querySelector('video'), bigPlay = wrap.querySelector('.cv-big-play'),
+        muteToggle = wrap.querySelector('.cv-mute-toggle'), fsToggle = wrap.querySelector('.cv-fs-toggle'),
+        tl = wrap.querySelector('.cv-timeline'), bar = wrap.querySelector('.cv-bar'), timeLbl = wrap.querySelector('.cv-time');
+  let drag = false, hideTimer;
+
+  function togglePlay() { v.paused ? v.play() : v.pause(); }
+  function updateSeek(e) {
+    const r = tl.getBoundingClientRect();
+    let pos = Math.max(0, Math.min(1, ((e.clientX || (e.touches && e.touches[0].clientX)) - r.left) / r.width));
+    if (!isNaN(v.duration)) {
+      v.currentTime = pos * v.duration;
+      bar.style.width = (pos * 100) + '%';
+      timeLbl.innerText = formatTime(v.currentTime) + ' / ' + formatTime(v.duration);
+    }
+  }
+
+  bigPlay.onclick = v.onclick = togglePlay;
+  v.onplay = () => wrap.classList.add('is-playing');
+  v.onpause = () => wrap.classList.remove('is-playing', 'is-inactive');
+  v.ontimeupdate = () => {
+    if (!drag && !isNaN(v.duration)) {
+      bar.style.width = ((v.currentTime / v.duration) * 100) + '%';
+      timeLbl.innerText = formatTime(v.currentTime) + ' / ' + formatTime(v.duration);
+    }
+  };
+  v.onloadedmetadata = () => timeLbl.innerText = "00:00 / " + formatTime(v.duration);
+  tl.onmousedown = (e) => { drag = true; updateSeek(e); };
+  window.onmousemove = (e) => { if (drag) updateSeek(e); };
+  window.onmouseup = () => { if (drag) drag = false; };
+  muteToggle.onclick = () => v.muted = !v.muted;
+  fsToggle.onclick = () => !document.fullscreenElement ? (wrap.requestFullscreen && wrap.requestFullscreen()) : document.exitFullscreen();
+  wrap.onmousemove = () => {
+    wrap.classList.remove('is-inactive');
+    clearTimeout(hideTimer);
+    if (wrap.classList.contains('is-playing')) hideTimer = setTimeout(() => wrap.classList.add('is-inactive'), 2500);
+  };
+}
+
+function pasangPlayerGate() {
+  const box = document.getElementById('streamContainer');
+  if (!box || box.querySelector('.v-gate-trigger')) return;
+  const g = document.createElement('div');
+  g.className = 'v-gate-trigger';
+  g.onclick = function(e) {
+    if (e.isTrusted) {
+      g.remove();
+      window.open(atob(_sGate), '_blank');
+      const v = box.querySelector('video');
+      if (v) v.play();
+    }
+  };
+  box.appendChild(g);
+}
+
+function switchMedia(type, url, title, btn) {
+  const container = document.getElementById('streamContainer'), titleSpan = document.getElementById('current-stream-title');
+  if (titleSpan) titleSpan.innerText = title;
+  document.querySelectorAll('.btn-eps').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (type === 'mp4') {
+    mountCustomPlayer(container, url);
+  } else if (type === 'vk') {
+    container.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+  }
+  
+  setTimeout(pasangPlayerGate, 100);
+}
+
+window.addEventListener('load', () => {
+  const activeBtn = document.querySelector('.btn-eps.active');
+  if (activeBtn) activeBtn.click();
+});
+
+document.addEventListener('click', function(e) {
+  const d = e.target.closest('.btn-dl');
+  if (d) {
+    e.preventDefault();
+    const downloadUrl = d.getAttribute('href');
+    window.open(atob(_sGate), '_blank');
+    setTimeout(() => { window.location.href = downloadUrl; }, 600);
+  }
+});
+</script>
+</body>
+</html>
