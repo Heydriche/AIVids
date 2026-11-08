@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIVids - AI Video Collections</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root{--bg:#030613;--card:#080d20;--border:rgba(0,240,255,0.15);--border-lit:#00f0ff;--text:#e2e8f0;--muted:#64748b;--cyan:#00f0ff;--glow:rgba(0,240,255,0.4);--font-base:'Courier Prime',monospace;--font-title:'Teko',sans-serif;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background-color:var(--bg);background-image:linear-gradient(rgba(0,240,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.03) 1px,transparent 1px);background-size:40px 40px;color:var(--text);font-family:var(--font-base);font-size:14px;overflow-x:hidden;line-height:1.6;}
+    body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,240,255,0.05) 0%,transparent 70%);pointer-events:none;z-index:-1;}
+    a{color:inherit;text-decoration:none;transition:all .25s ease;}
+    .container{width:94%;max-width:1400px;margin:0 auto;position:relative;z-index:2;}
+    nav{padding:12px 0;border-bottom:1px solid var(--border);background:rgba(3,6,19,0.9);backdrop-filter:blur(8px);position:sticky;top:0;z-index:100;}
+    .nav-box{display:flex;align-items:center;justify-content:space-between;gap:15px;}
+    .nav-brand-wrap{display:flex;align-items:center;gap:10px;}
+    .ico-tech{width:24px;height:24px;fill:var(--cyan);filter:drop-shadow(0 0 5px var(--glow));transform:translateY(-3px);}
+    .brand-name{font-family:var(--font-title);font-weight:700;font-size:1.8rem;color:var(--cyan);text-shadow:0 0 8px var(--glow);line-height:1;}
+    .nav-right-zone{display:flex;align-items:center;gap:10px;}
+    .nav-dropdown{position:relative;}
+    .nav-drop-btn{background:rgba(0,240,255,0.06);border:1px solid var(--border);color:var(--cyan);padding:7px 12px;border-radius:4px;font-family:var(--font-base);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .25s ease;}
+    .nav-dropdown:hover .nav-drop-btn,.nav-dropdown.active .nav-drop-btn{background:var(--cyan);color:#000;border-color:var(--cyan);box-shadow:0 0 12px var(--glow);}
+    .nav-drop-menu{position:absolute;top:calc(100% + 4px);right:0;background:#05091a;border:1px solid var(--cyan);border-radius:6px;min-width:210px;display:none;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.9);z-index:200;}
+    .nav-dropdown:hover .nav-drop-menu,.nav-dropdown.active .nav-drop-menu{display:flex;}
+    .nav-drop-menu a{padding:10px 14px;color:var(--text);font-size:11px;font-weight:700;border-bottom:1px solid rgba(0,240,255,0.08);}
+    .nav-drop-menu a:hover{background:rgba(0,240,255,0.15);color:var(--cyan);padding-left:18px;}
+    .hero-video-box{margin:20px 0;width:100%;aspect-ratio:21/9;background:#000;border:1px solid var(--border);position:relative;overflow:hidden;border-radius:8px;}
+    @media(max-width:768px){.hero-video-box{aspect-ratio:16/9;}}
+    .hero-video-box video{width:100%;height:100%;object-fit:cover;opacity:0.85;}
+    .hero-video-box::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--bg),transparent);pointer-events:none;}
+    .section-bar{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:20px;}
+    .section-title{font-family:var(--font-title);font-weight:700;font-size:2rem;color:#fff;text-shadow:0 0 10px var(--glow);line-height:1;}
+    .section-meta{font-size:0.85rem;color:var(--cyan);font-weight:500;}
+    
+    /* GRID VIDEO */
+    .post-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:15px;padding-bottom:40px;align-items:start;}
+    .post-card{background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;position:relative;transition:all .3s;border-radius:8px;overflow:hidden;}
+    .post-card:hover{border-color:var(--cyan);transform:translateY(-3px);box-shadow:0 10px 20px rgba(0,0,0,0.8),0 0 15px var(--glow);}
+    .card-media{width:100%;aspect-ratio:1/1;overflow:hidden;position:relative;display:block;}
+    .card-media img{width:100%;height:100%;display:block;object-fit:cover;transition:0.4s;}
+    .card-label{position:absolute;top:10px;left:10px;background:var(--cyan);color:#000;padding:4px 8px;font-size:0.75rem;font-weight:700;z-index:2;border-radius:4px;}
+    .post-card:hover .card-media img{transform:scale(1.05);}
+    .card-info{padding:15px;display:flex;flex-direction:column;flex-grow:1;}
+    .card-title{font-family:var(--font-title);font-weight:600;font-size:1.5rem;margin-bottom:5px;color:#fff;line-height:1.2;}
+    .post-card:hover .card-title{color:var(--cyan);}
+    .card-footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--cyan);font-weight:700;}
+    @media(max-width:1024px){.post-grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:680px){.post-grid{grid-template-columns:repeat(2,1fr);}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container nav-box">
+    <div class="nav-brand-wrap">
+      <svg class="ico-tech" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2v2a2 2 0 0 1-2 2h-2v2a2 2 0 0 1-4 0v-2H8a2 2 0 0 1-2-2v-2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2V8a2 2 0 0 1 2-2h2V4a2 2 0 0 1 2-2zm0 2h-2v2h2V4zm0 14h-2v2h2v-2zM8 8H6v2h2V8zm10 0h-2v2h2V8zM8 14H6v2h2v-2zm10 0h-2v2h2v-2zM14 8h-4v8h4V8z"/></svg>
+      <a class="brand-name" href="./">AIVIDS</a>
+    </div>
+    <div class="nav-right-zone">
+      <div class="nav-dropdown">
+        <button class="nav-drop-btn" type="button">NETWORK</button>
+        <div class="nav-drop-menu">
+          <a href="https://gaofs.blogspot.com" target="_blank">ADULT VIDEO</a>
+          <a href="https://gotios.blogspot.com" target="_blank">ANIMATION &amp; COMIC</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="hero-video-box">
+    <video autoplay loop muted playsinline>
+      <source src="https://ik.imagekit.io/brunoeze/Landing.mp4" type="video/mp4"/>
+    </video>
+  </div>
+
+  <div class="section-bar">
+    <h2 class="section-title">Latest Videos</h2>
+    <span class="section-meta">Video Directory</span>
+  </div>
+
+  <!-- DAFTAR POSTINGAN VIDEO -->
+  <div class="post-grid">
+    
+    <!-- CONTOH 1 KARTU VIDEO (Tinggal copy-paste bagian <article> ini kalau mau nambah video baru) -->
+    <article class="post-card">
+      <a class="card-media" href="going-once.html">
+        <span class="card-label">3D AI</span>
+        <img src="https://imglink.cc/cdn/LyoDJYEwVA.jpg" alt="Going Once"/>
+      </a>
+      <div class="card-info">
+        <h3 class="card-title"><a href="going-once.html">Going Once</a></h3>
+        <div class="card-footer">
+          <span>Watch</span>
+          <svg fill="var(--cyan)" height="16" viewBox="0 0 24 24" width="16"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<footer style="text-align:center;padding:30px 0;border-top:1px solid rgba(0,240,255,0.1);margin-top:20px;color:var(--muted);font-size:0.9rem;">
+  &#169; AIVids. AI VIDEO COLLECTIONS
+</footer>
+
+</body>
+</html>
