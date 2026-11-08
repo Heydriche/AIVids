@@ -113,7 +113,6 @@
 
 <script>
 const _sGate = "aHR0cHM6Ly9hdWN0aW9uci5vcmcvNC9hY2QwOWRhZTJjNjBhOWZlMjZhMTA4NmMzNjg1NjU1Mg==";
-const defaultPoster = "https://imglink.cc/cdn/U9Waea6pwZ.jpg";
 
 function formatTime(s) {
   if (isNaN(s)) return "00:00";
@@ -121,10 +120,10 @@ function formatTime(s) {
   return (m < 10 ? "0" + m : m) + ":" + (sec < 10 ? "0" + sec : sec);
 }
 
-function mountCustomPlayer(c, u, p) {
+function mountCustomPlayer(c, u) {
   c.innerHTML = `
     <div class="cv-wrapper">
-      <video src="${u}" ${p ? `poster="${p}"` : ''} playsinline preload="metadata"></video>
+      <video src="${u}" playsinline preload="metadata"></video>
       <div class="cv-big-play" title="Play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       <div class="cv-controls">
         <div class="cv-timeline"><div class="cv-track"><div class="cv-bar"></div></div></div>
@@ -192,7 +191,7 @@ function pasangPlayerGate() {
   box.appendChild(g);
 }
 
-function switchMedia(type, url, title, btn, poster) {
+function switchMedia(type, url, title, btn) {
   const container = document.getElementById('streamContainer'), titleSpan = document.getElementById('current-stream-title');
   if (titleSpan) titleSpan.innerText = title;
   document.querySelectorAll('.btn-eps').forEach(b => b.classList.remove('active'));
@@ -201,7 +200,7 @@ function switchMedia(type, url, title, btn, poster) {
   container.innerHTML = '';
   
   if (type === 'mp4') {
-    mountCustomPlayer(container, url, poster || defaultPoster);
+    mountCustomPlayer(container, url);
   } else if (type === 'vk') {
     container.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
   }
